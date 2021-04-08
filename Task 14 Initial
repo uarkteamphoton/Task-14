@@ -52,6 +52,16 @@ public class ProductRestController extends BaseRestController {
 	) {
 
 		// TODO: Verify that the user associated with the current session is elevated
+		final Optional<ActiveUserEntity> activeUserEntity =
+			this.getCurrentUser(request);
+		if (!activeUserEntity.isPresent()) {
+			return this.buildInvalidSessionResponse();
+		} else if (!this.isElevatedUser(activeUserEntity.get())) {
+			return this.buildNoPermissionsResponse(
+				ViewNames.PRODUCT_LISTING.getRoute());
+		}
+
+		///////
 
 		return this.productUpdateCommand
 			.setProductId(productId)
